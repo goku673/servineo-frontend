@@ -1,152 +1,157 @@
-'use client';
+"use client"
 
-import React, { useState } from 'react'
-import SearchBar from '@/Components/Offers/SearchBar'
-import FilterBar, { type FilterBarValues } from '@/Components/Offers/FilterBar'
-import OfferTable from '@/Components/Offers/OfferTable'
-import type { OfferItem } from '@/Components/Offers/OfferList'
-import Tabs from '@/Components/Tabs/Tabs'
-import TabsList from '@/Components/Tabs/TabsList'
-import TabsTrigger from '@/Components/Tabs/TabsTrigger'
-import TabsContent from '@/Components/Tabs/TabsContent'
+import { useState, useEffect, useMemo } from "react"
+import { mockJobOfferService, type JobOffer } from "../lib/mock-data"
+import { JobOfferCard } from "@/Components/Job-offers/Job-offer-card"
+import { JobOfferModal } from "@/Components/Job-offers/Job-offer-modal"
+import { List, Map } from "lucide-react"
+import { SearchBar } from "@/Components/Shared/SearchBar"
+import { FilterBar } from "@/Components/Shared/FilterBar"
+import { Navbar } from "@/Components/Shared/Navbar"
+import { MapView } from "@/Components/Job-offers/maps/MapView"
 
-const JobOfferListPage = () => {
-  const [activeTab, setActiveTab] = useState('offersJobs')
-  const [search, setSearch] = useState('')
-  const [filters, setFilters] = useState<FilterBarValues>({ category: '', price: '', location: '', rating: '' })
-  const [alphaRange, setAlphaRange] = useState<string>('')
+export default function JobOffersPage() {
+  const [selectedOffer, setSelectedOffer] = useState<JobOffer | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [offers, setOffers] = useState<JobOffer[]>([])
+  const [view, setView] = useState<"list" | "map">("map")
+  const [searchQuery, setSearchQuery] = useState("")
+  const [selectedFilters, setSelectedFilters] = useState<string[]>([])
 
-  // Datos mock; reemplazar con datos de API cuando estén disponibles
-  const items: OfferItem[] = [
-    {
-      id: '1',
-      title: 'Reparación de grifo',
-      description: 'Servicio de reparación y mantenimiento de grifos y llaves de agua',
-      author: 'Juan Pérez',
-      rating: 4.8,
-      price: 150,
-      tag: 'Fontanería',
-      category: 'plomeria',
-      location: 'La Paz',
-    },
-    {
-      id: '2',
-      title: 'Instalación eléctrica',
-      description: 'Instalación y reparación de sistemas eléctricos residenciales',
-      author: 'María García',
-      rating: 4.9,
-      price: 300,
-      tag: 'Electricidad',
-      category: 'electricidad',
-      location: 'Cochabamba',
-    },
-    {
-      id: '3',
-      title: 'Albañilería general',
-      description: 'Construcción y reparación de muros y estructuras',
-      author: 'Carlos López',
-      rating: 4.6,
-      price: 220,
-      tag: 'Albañilería',
-      category: 'albanileria',
-      location: 'Santa Cruz',
-    },
-     {
-      id: '4',
-      title: 'Reparación de grifo',
-      description: 'Servicio de reparación y mantenimiento de grifos y llaves de agua',
-      author: 'Juan Pérez',
-      rating: 4.8,
-      price: 150,
-      tag: 'Fontanería',
-      category: 'plomeria',
-      location: 'La Paz',
-    },
-    {
-      id: '5',
-      title: 'Instalación eléctrica',
-      description: 'Instalación y reparación de sistemas eléctricos residenciales',
-      author: 'María García',
-      rating: 4.9,
-      price: 300,
-      tag: 'Electricidad',
-      category: 'electricidad',
-      location: 'Cochabamba',
-    },
-    {
-      id: '6',
-      title: 'Albañilería general',
-      description: 'Construcción y reparación de muros y estructuras',
-      author: 'Carlos López',
-      rating: 4.6,
-      price: 220,
-      tag: 'Albañilería',
-      category: 'albanileria',
-      location: 'Santa Cruz',
-    },
-  ]
+  // Cargar ofertas al montar el componente
+  useEffect(() => {
+    const allOffers = mockJobOfferService.getOffers()
+    setOffers(allOffers)
+  }, [])
+
+  const availableFilters = useMemo(() => {
+    return Array.from(new Set(offers.flatMap((offer) => offer.tags)))
+  }, [offers])
+
+  const sortedOffers = useMemo(() => {
+    return [...offers]
+      .filter((offer) => {
+        const matchesSearch =
+          searchQuery === "" ||
+          offer.fixerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          offer.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          offer.tags.some((tag) =>
+            tag.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+
+        const matchesFilters =
+          selectedFilters.length === 0 ||
+          selectedFilters.some((filter) => offer.tags.includes(filter))
+
+        return matchesSearch && matchesFilters
+      })
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+  }, [offers, searchQuery, selectedFilters])
+
+  const handleFilterChange = (filter: string) => {
+    setSelectedFilters((prev) =>
+      prev.includes(filter)
+        ? prev.filter((f) => f !== filter)
+        : [...prev, filter]
+    )
+  }
+
+  const handleCardClick = (offer: JobOffer) => {
+    setSelectedOffer(offer)
+    setIsModalOpen(true)
+  }
 
   return (
-    <div className="container mx-auto p-4 max-w-6xl">
-      <h1 className="text-2xl font-bold mb-6 text-center">Ofertas de Trabajo</h1>
-
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <div className="flex justify-center">
-          <TabsList className="flex mb-4 gap-[0.1px]">
-            <TabsTrigger value="offersJobs">Offers Jobs</TabsTrigger>
-            <TabsTrigger value="help">Ayuda</TabsTrigger>
-            
-          </TabsList>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
+      <Navbar />
+      
+      <div className="flex justify-center container mx-auto py-2">
+        <div className="flex justify-end">
+          <div className="inline-flex items-center gap-2 bg-white backdrop-blur-lg border-2 border-primary rounded-xl p-1">
+            <button
+              onClick={() => setView("list")}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                view === "list"
+                  ? "bg-primary text-white shadow-lg shadow-blue-500/30"
+                  : "text-blue-900 hover:bg-blue-50"
+              }`}
+            >
+              <List className="w-4 h-4" />
+              Lista
+            </button>
+            <button
+              onClick={() => setView("map")}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                view === "map"
+                  ? "bg-primary text-white shadow-lg shadow-blue-500/30"
+                  : "text-blue-900 hover:bg-blue-50"
+              }`}
+            >
+              <Map className="w-4 h-4" />
+              Mapa
+            </button>
+          </div>
         </div>
+      </div>
 
-        <div className="mt-2">
-          {/* Tabla de ofertas con filtros + paginación */}
-          <TabsContent value="offersJobs" activeTab={activeTab}>
-            <div style={{ display: 'grid', gap: 12 }}>
-              <SearchBar value={search} onChange={setSearch} />
+      <div className="container mx-auto px-4 py-4">
+        <div className="flex flex-col md:flex-row gap-4 mb-8 animate-fade-in">
+          <SearchBar
+            value={searchQuery}
+            onChange={setSearchQuery}
+            placeholder="Buscar ofertas de trabajo..."
+            disabled={false}
+          />
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                <FilterBar {...filters} onChange={setFilters} />
-                <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                  <label style={{ fontSize: 14, color: '#374151' }}>Rango A-Z</label>
-                  <select
-                    value={alphaRange}
-                    onChange={(e) => setAlphaRange(e.target.value)}
-                    className="rounded-full border-0 bg-gray-200 px-4 py-2 text-sm text-gray-900 focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">Todos</option>
-                    <option value="A-C">A-C</option>
-                    <option value="D-F">D-F</option>
-                    <option value="G-I">G-I</option>
-                    <option value="J-L">J-L</option>
-                    <option value="M-O">M-O</option>
-                    <option value="P-R">P-R</option>
-                    <option value="S-U">S-U</option>
-                    <option value="V-Z">V-Z</option>
-                  </select>
-                </div>
+          <FilterBar
+            filters={availableFilters}
+            selectedFilters={selectedFilters}
+            onFilterChange={handleFilterChange}
+            onClearFilters={() => setSelectedFilters([])}
+            disabled={true}
+          />
+        </div> {/* ← faltaba cerrar este div */}
+
+        {view === "list" ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {sortedOffers.map((offer, index) => (
+              <div
+                key={offer.id}
+                className="animate-fade-in"
+                style={{ animationDelay: `${index * 50}ms` }}
+              >
+                <JobOfferCard offer={offer} onClick={() => handleCardClick(offer)} />
               </div>
+            ))}
 
-              <OfferTable items={items} search={search} filters={filters} alphaRange={alphaRange} />
+            {sortedOffers.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">
+                  No hay ofertas de trabajo disponibles
+                </p>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="w-full min-h-[calc(100vh-16rem)] relative">
+            <div className="absolute inset-0">
+              <MapView
+                offers={sortedOffers}
+                onOfferClick={(offer) => {
+                  setSelectedOffer(offer)
+                  setIsModalOpen(true)
+                }}
+              />
             </div>
-          </TabsContent>
+          </div>
+        )}
+      </div>
 
-          {/* Ayuda */}
-          <TabsContent value="help" activeTab={activeTab}>
-            <div className="rounded-xl border border-gray-300 bg-white p-6">
-              <h2 className="text-lg font-semibold mb-2">Ayuda</h2>
-              <ul className="list-disc pl-5 text-sm text-gray-700 space-y-1">
-                <li>Usa la búsqueda para encontrar ofertas por título, descripción o autor.</li>
-                <li>Filtra por categoría, precio, ubicación y rating con la barra de filtros.</li>
-                <li>Ajusta el rango alfabético A–Z para limitar por inicial del título.</li>
-                <li>La tabla incluye paginación para navegar por los resultados.</li>
-              </ul>
-            </div>
-          </TabsContent>
-        </div>
-      </Tabs>
+      <JobOfferModal
+        offer={selectedOffer}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   )
 }
-
-export default JobOfferListPage
