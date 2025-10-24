@@ -213,6 +213,10 @@
   }
 }
 
+.cursor-pointer button, .cursor-pointer input[type="checkbox"], .cursor-pointer label {
+  cursor: pointer;
+}
+
 .animate-fadeInUp {
   animation: fadeInUp 0.5s ease-out forwards;
 }

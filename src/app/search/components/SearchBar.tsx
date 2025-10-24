@@ -1,3 +1,4 @@
+"use client";
 import { Input } from "../../../components/ui/input";
 import React from "react";
 
@@ -6,25 +7,25 @@ interface InputDemoProps {
   value?: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onClear: () => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
-// Cambia la firma de la función para recibir las props
-export function InputDemo({ value = "", onChange, onClear }: InputDemoProps) {
+export function InputDemo({ value = "", onChange, onClear, onKeyDown }: InputDemoProps) {
   const ClearButton = () => (
-    <button 
+    <button
       onClick={onClear}
       style={{
-        position: 'absolute',
+        position: "absolute",
         right: 8,
         zIndex: 2,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
         width: 20,
         height: 20,
-        backgroundColor: 'transparent',
-        border: 'none',
-        cursor: 'pointer',
+        backgroundColor: "transparent",
+        border: "none",
+        cursor: "pointer",
         padding: 0,
       }}
       aria-label="Limpiar búsqueda"
@@ -38,10 +39,10 @@ export function InputDemo({ value = "", onChange, onClear }: InputDemoProps) {
   );
 
   const paddingRight = value.length > 0 ? 55 : 35; // 35 (icono) + 20 (botón "X")
-        
+
   return (
-    <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-      <span style={{ position: 'absolute', left: 8, zIndex: 2, display: 'flex', alignItems: 'center' }}>
+    <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+      <span style={{ position: "absolute", left: 8, zIndex: 2, display: "flex", alignItems: "center" }}>
         <svg id="search-icon" width="20" height="20" viewBox="0 0 20 20" fill="#888" xmlns="http://www.w3.org/2000/svg">
           <circle cx="9" cy="9" r="7" stroke="#888" strokeWidth="2" fill="none" />
           <line x1="15" y1="15" x2="19" y2="19" stroke="#888" strokeWidth="2" />
@@ -50,9 +51,10 @@ export function InputDemo({ value = "", onChange, onClear }: InputDemoProps) {
       <Input
         type="text"
         placeholder="¿Qué servicio necesitas?"
-        style={{ paddingLeft: 35, paddingRight, width: '100%', minWidth: 300, maxWidth: 1000 }}
+        style={{ paddingLeft: 35, paddingRight, width: "100%", minWidth: 300, maxWidth: 1000 }}
         value={value}
         onChange={onChange}
+        onKeyDown={onKeyDown}
       />
       {value.length > 0 && <ClearButton />}
     </div>

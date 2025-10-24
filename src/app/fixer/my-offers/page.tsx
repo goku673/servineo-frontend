@@ -4,10 +4,10 @@ import { useState, useEffect } from "react"
 import { currentFixer, mockJobOfferService, type JobOffer } from "@/app/lib/mock-data"
 import { Plus, Edit2, Trash2, ImageIcon } from "lucide-react"
 //import Link from "next/link"
-import { Navbar } from "@/Components/Shared/Navbar"
-import JobOfferForm from "@/Components/Job-offers/Job-offer-form"
+import { Navbar } from "@/components/Shared/Navbar"
+import JobOfferForm from "@/components/Job-offers/Job-offer-form"
 import { JobOfferFormData } from "@/app/lib/validations/Job-offer-Schemas"
-import { ImageCarousel } from "@/Components/Shared/ImageCarousel"
+import { ImageCarousel } from "@/components/Shared/ImageCarousel"
 
 export default function MyOffersPage() {
   const [offers, setOffers] = useState<JobOffer[]>([])

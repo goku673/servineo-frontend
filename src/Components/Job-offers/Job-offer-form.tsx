@@ -138,7 +138,7 @@ export default function JobOfferForm({
        <form onSubmit={handleSubmit(handleFormSubmit)} className="p-6 space-y-6 overflow-y-auto max-h-[calc(90vh-100px)]">
         {/* Description */}
         <div className="animate-fade-in">
-          <label className="block text-sm font-semibold mb-2 flex items-center gap-2">
+          <label className="block text-sm font-semibold mb-2 items-center gap-2">
             <Sparkles className="w-4 h-4 text-primary" />
             Descripción del trabajo *
           </label>

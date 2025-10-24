@@ -1,7 +1,7 @@
 "use client"
 
 import type { JobOffer } from "@/app/lib/mock-data"
-import { ImageCarousel } from "@/Components/Shared/ImageCarousel"
+import { ImageCarousel } from "@/components/Shared/ImageCarousel"
 // MapPin is not used in this component
 
 interface JobOfferCardProps {
