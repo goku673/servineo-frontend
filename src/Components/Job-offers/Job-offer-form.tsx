@@ -58,7 +58,7 @@ export default function JobOfferForm({
     rules: { required: true, minLength: 1 }
   })
 
-  const selectedServices = fields.map(field => field.value)
+  const selectedServicess = fields.map(field => field.value)
   const description = watch("description") || ""
 
   // Sincronizar fotos cuando cambien los valores por defecto
@@ -201,7 +201,7 @@ export default function JobOfferForm({
               <label
                 key={service}
                 className={`flex items-center gap-3 p-3 border-2 rounded-xl cursor-pointer transition-all ${
-                  selectedServices.includes(service)
+                  selectedServicess.includes(service)
                     ? 'border-primary bg-primary/10'
                     : 'border-border hover:bg-muted hover:border-primary/50'
                 }`}
@@ -209,7 +209,7 @@ export default function JobOfferForm({
               >
                 <input
                   type="checkbox"
-                  checked={selectedServices.includes(service)}
+                  checked={selectedServicess.includes(service)}
                   onChange={() => handleServiceToggle(service)}
                   className="w-4 h-4 accent-primary"
                 />

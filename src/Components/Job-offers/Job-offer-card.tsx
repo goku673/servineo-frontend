@@ -4,12 +4,12 @@ import type { JobOffer } from "@/app/lib/mock-data"
 import { ImageCarousel } from "@/components/Shared/ImageCarousel"
 // MapPin is not used in this component
 
-interface JobOfferCardProps {
+interface JobOfferCardPropss {
   offer: JobOffer
   onClick: () => void
 }
 
-export function JobOfferCard({ offer, onClick }: JobOfferCardProps) {
+export function JobOfferCard({ offer, onClick }: JobOfferCardPropss) {
   const images = offer.photos.length > 0 
     ? offer.photos 
     : ["/placeholder.svg?height=180&width=320&text=Oferta"]
