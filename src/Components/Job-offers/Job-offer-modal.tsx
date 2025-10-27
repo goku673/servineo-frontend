@@ -110,7 +110,7 @@ export function JobOfferModal({ offer, isOpen, onClose }: Props) {
             className="flex items-center justify-center gap-3 w-full bg-gradient-to-r from-primary to-blue-600 text-primary-foreground py-4 rounded-xl text-center font-bold hover:shadow-2xl hover:shadow-primary/30 hover:scale-105 transition-all duration-300"
           >
             <MessageCircle className="w-5 h-5" />
-            Contactar por WhatsApp
+            Contacto de WhatsApp
           </a>
         </div>
       </div>
