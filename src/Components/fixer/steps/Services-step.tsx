@@ -88,14 +88,14 @@ export function ServicesStep({
                 type="checkbox"
                 checked={selectedServiceIds.includes(s.id)}
                 onChange={() => onToggleService(s.id)}
-                className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-blue-500"
+                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
               <span className="flex-1 truncate">{s.name}</span>
               {s.custom && (
                 <span className="flex gap-2 text-xs">
                   <button
                     type="button"
-                    className="text-primary hover:text-blue-800 transition-colors"
+                    className="text-blue-600 hover:text-blue-800 transition-colors"
                     onClick={(e) => {
                       e.preventDefault();
                       handleEdit(s);

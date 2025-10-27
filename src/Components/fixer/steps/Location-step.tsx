@@ -68,6 +68,15 @@ export function LocationStep({ location, onLocationChange, error }: LocationStep
     ]
   );
 
+  const isInCochabamba = useCallback((lat: number, lng: number): boolean => {
+    return (
+      lat >= COCHABAMBA_BOUNDS.south &&
+      lat <= COCHABAMBA_BOUNDS.north &&
+      lng >= COCHABAMBA_BOUNDS.west &&
+      lng <= COCHABAMBA_BOUNDS.east
+    )
+  }, [COCHABAMBA_BOUNDS])
+
   useEffect(() => {
     if (!mapLoaded || !mapRef.current) return;
 
