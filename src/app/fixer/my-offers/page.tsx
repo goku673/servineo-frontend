@@ -3,20 +3,11 @@
 import { useState, useEffect } from "react"
 import { currentFixer, mockJobOfferService, type JobOffer } from "@/app/lib/mock-data"
 import { Plus, Edit2, Trash2, ImageIcon } from "lucide-react"
-import { Navbar } from "@/Components/Shared/Navbar"
-import JobOfferForm from "@/Components/Job-offers/Job-offer-form"
-import type { JobOfferFormData } from "@/app/lib/validations/Job-offer-Schemas"
-import { ImageCarousel } from "@/Components/Shared/ImageCarousel"
-import NotificationModal from "@/Components/Modal-notifications"
-import ConfirmationModal from "@/Components/Modal-confirmation"
-import { useAppDispatch, useAppSelector } from "@/app/redux/hooks"
-import { setFixer } from "@/app/redux/slice/fixerSlice"
-import {
-  setOffers,
-  addOffer,
-  updateOffer as updateOfferRedux,
-  deleteOffer as deleteOfferRedux,
-} from "@/app/redux/slice/jobOffersSlice"
+//import Link from "next/link"
+import { Navbar } from "@/components/Shared/Navbar"
+import JobOfferForm from "@/components/Job-offers/Job-offer-form"
+import { JobOfferFormData } from "@/app/lib/validations/Job-offer-Schemas"
+import { ImageCarousel } from "@/components/Shared/ImageCarousel"
 
 export default function MyOffersPage() {
   const dispatch = useAppDispatch()

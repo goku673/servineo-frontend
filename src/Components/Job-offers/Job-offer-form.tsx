@@ -49,9 +49,14 @@ export default function JobOfferForm({
     },
   })
 
-  const toggleService = (service: string) => {
-    const serviceObj = { id: service, value: service }
-    const isSelected = selectedServices.some((s) => s.value === service)
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "services" as const,
+    rules: { required: true, minLength: 1 }
+  })
+
+  const selectedServicess = fields.map(field => field.value)
+  const description = watch("description") || ""
 
     if (isSelected) {
       const newServices = selectedServices.filter((s) => s.value !== service)
@@ -79,11 +84,12 @@ export default function JobOfferForm({
         </button>
       </div>
 
-      <form onSubmit={handleSubmit(handleFormSubmit)} className="p-6 space-y-6">
-        <div className="space-y-2">
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-            Descripción del servicio
-            <span className="text-xs text-gray-500 ml-2">(máx. 100 caracteres)</span>
+       <form onSubmit={handleSubmit(handleFormSubmit)} className="p-6 space-y-6 overflow-y-auto max-h-[calc(90vh-100px)]">
+        {/* Description */}
+        <div className="animate-fade-in">
+          <label className="block text-sm font-semibold mb-2 items-center gap-2">
+            <Sparkles className="w-4 h-4 text-primary" />
+            Descripción del trabajo *
           </label>
           <textarea
             id="description"
@@ -118,16 +124,20 @@ export default function JobOfferForm({
             {availableServices.map((service) => (
               <button
                 key={service}
-                type="button"
-                onClick={() => toggleService(service)}
-                className={`px-4 py-2 rounded-lg border-2 transition-all font-medium ${
-                  selectedServices.some((s) => s.value === service)
-                    ? "border-blue-600 bg-blue-600 text-white"
-                    : "border-gray-200 hover:border-blue-600 text-gray-700"
+                className={`flex items-center gap-3 p-3 border-2 rounded-xl cursor-pointer transition-all ${
+                  selectedServicess.includes(service)
+                    ? 'border-primary bg-primary/10'
+                    : 'border-border hover:bg-muted hover:border-primary/50'
                 }`}
               >
-                {service}
-              </button>
+                <input
+                  type="checkbox"
+                  checked={selectedServicess.includes(service)}
+                  onChange={() => handleServiceToggle(service)}
+                  className="w-4 h-4 accent-primary"
+                />
+                <span className="text-sm">{service}</span>
+              </label>
             ))}
           </div>
           {errors.services && <p className="text-sm text-red-600">{errors.services.message}</p>}

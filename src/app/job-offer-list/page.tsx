@@ -2,13 +2,13 @@
 
 import { useState, useEffect, useMemo } from "react"
 import { mockJobOfferService, type JobOffer } from "../lib/mock-data"
-import { JobOfferCard } from "@/Components/Job-offers/Job-offer-card"
-import { JobOfferModal } from "@/Components/Job-offers/Job-offer-modal"
+import { JobOfferCard } from "@/components/Job-offers/Job-offer-card"
+import { JobOfferModal } from "@/components/Job-offers/Job-offer-modal"
 import { List, Map } from "lucide-react"
-import { SearchBar } from "@/Components/Shared/SearchBar"
-import { FilterBar } from "@/Components/Shared/FilterBar"
-import { Navbar } from "@/Components/Shared/Navbar"
-import { MapView } from "@/Components/Job-offers/maps/MapView"
+import { SearchBar } from "@/components/Shared/SearchBar"
+import { FilterBar } from "@/components/Shared/FilterBar"
+import { Navbar } from "@/components/Shared/Navbar"
+import { MapView } from "@/components/Job-offers/maps/MapView"
 
 export default function JobOffersPage() {
   const [selectedOffer, setSelectedOffer] = useState<JobOffer | null>(null)
@@ -25,8 +25,10 @@ export default function JobOffersPage() {
   }, [])
 
   const availableFilters = useMemo(() => {
-    return Array.from(new Set(offers.flatMap((offer) => offer.tags)))
-  }, [offers])
+    const tags = new Set<string>();
+    offers.forEach((offer) => offer.tags.forEach((tag) => tags.add(tag)));
+    return Array.from(tags);
+  }, [offers]);
 
   const sortedOffers = useMemo(() => {
     return [...offers]
@@ -37,16 +39,20 @@ export default function JobOffersPage() {
           offer.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
           offer.tags.some((tag) =>
             tag.toLowerCase().includes(searchQuery.toLowerCase())
-          )
+          );
 
         const matchesFilters =
           selectedFilters.length === 0 ||
-          selectedFilters.some((filter) => offer.tags.includes(filter))
+          selectedFilters.some((filter) => offer.tags.includes(filter));
 
-        return matchesSearch && matchesFilters
+        return matchesSearch && matchesFilters;
       })
-      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-  }, [offers, searchQuery, selectedFilters])
+      .sort((a, b) => {
+        const dateA = a.createdAt instanceof Date && !isNaN(a.createdAt.getTime()) ? a.createdAt.getTime() : 0;
+        const dateB = b.createdAt instanceof Date && !isNaN(b.createdAt.getTime()) ? b.createdAt.getTime() : 0;
+        return dateB - dateA;
+      });
+  }, [offers, searchQuery, selectedFilters]);
 
   const handleFilterChange = (filter: string) => {
     setSelectedFilters((prev) =>
@@ -62,7 +68,7 @@ export default function JobOffersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 overflow-x-hidden">
       <Navbar />
       
       <div className="flex justify-center container mx-auto py-2">
@@ -95,22 +101,22 @@ export default function JobOffersPage() {
       </div>
 
       <div className="container mx-auto px-4 py-4">
-        <div className="flex flex-col md:flex-row gap-4 mb-8 animate-fade-in">
+        <div className="flex flex-col md:flex-row gap-4 mb-8 animate-fade-in relative z-10">
           <SearchBar
             value={searchQuery}
             onChange={setSearchQuery}
             placeholder="Buscar ofertas de trabajo..."
             disabled={false}
           />
-
           <FilterBar
             filters={availableFilters}
             selectedFilters={selectedFilters}
             onFilterChange={handleFilterChange}
             onClearFilters={() => setSelectedFilters([])}
-            disabled={true}
+            disabled={false}
+            className="cursor-pointer"
           />
-        </div> {/* ← faltaba cerrar este div */}
+        </div>
 
         {view === "list" ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -123,7 +129,6 @@ export default function JobOffersPage() {
                 <JobOfferCard offer={offer} onClick={() => handleCardClick(offer)} />
               </div>
             ))}
-
             {sortedOffers.length === 0 && (
               <div className="text-center py-12">
                 <p className="text-muted-foreground">
@@ -133,16 +138,24 @@ export default function JobOffersPage() {
             )}
           </div>
         ) : (
-          <div className="w-full min-h-[calc(100vh-16rem)] relative">
-            <div className="absolute inset-0">
-              <MapView
-                offers={sortedOffers}
-                onOfferClick={(offer) => {
-                  setSelectedOffer(offer)
-                  setIsModalOpen(true)
-                }}
-              />
-            </div>
+          <div className="w-full min-h-[calc(100vh-16rem)] relative overflow-hidden z-0">
+            {sortedOffers.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">
+                  No hay ofertas de trabajo disponibles
+                </p>
+              </div>
+            ) : (
+              <div className="absolute inset-0">
+                <MapView
+                  offers={sortedOffers}
+                  onOfferClick={(offer) => {
+                    setSelectedOffer(offer);
+                    setIsModalOpen(true);
+                  }}
+                />
+              </div>
+            )}
           </div>
         )}
       </div>
