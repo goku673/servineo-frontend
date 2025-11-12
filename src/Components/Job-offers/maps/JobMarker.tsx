@@ -34,3 +34,4 @@ export function JobMarker({ offer, isSelected, onClick }: JobMarkerProps) {
     </button>
   )
 }
+
