@@ -38,6 +38,7 @@ export const JobCard = ({idJob, destacado, imgPath, titulo, descripcion, categor
     const {min, max} = precio
 
     useEffect(() => {
+        
         setImageLink(imgPath)
     }, [idJob, imgPath])
 
