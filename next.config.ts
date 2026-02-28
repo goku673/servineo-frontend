@@ -4,36 +4,25 @@ import createNextIntlPlugin from 'next-intl/plugin';
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
 const nextConfig: NextConfig = {
-  /*
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: false,
-  },
-*/
   images: {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "drive.google.com",
-        pathname: "/**",
-
+        hostname: "**",
       },
       {
-        protocol: "https",
-        hostname: "picsum.photos",
-        pathname: "/**",
-
+        protocol: "http",
+        hostname: "**",
       },
-      {
-        protocol: "https",
-        hostname: "ejemplo.com",
-        pathname: "/**",
-
-      },
-
     ],
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'http://127.0.0.1:8000/api/:path*',
+      },
+    ];
   },
 };
 
